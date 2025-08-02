@@ -1,5 +1,5 @@
 <h2 align="center">
-  Portfolio Website - v2.0<br/>
+  Portfolio Website<br/>
   <a href="https://my-portfolio-kumarvishal3257s-projects.vercel.app/" target="_blank">vishal.kumar</a>
 </h2>
 <div align="center">
