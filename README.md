@@ -2,11 +2,11 @@
   Portfolio Website - v2.0<br/>
   <a href="https://my-portfolio-kumarvishal3257s-projects.vercel.app/" target="_blank">vishal.kumar</a>
 </h2>
+<div align="center">
+  <img alt="Demo" src="./Images/readme-img.png" />
+</div>
 
 <br/>
-
-
-## Built With
 
 My personal portfolio <a href="https://my-portfolio-kumarvishal3257s-projects.vercel.app/" target="_blank">vishal.kumar</a> which features some of my github projects as well as my resume and technical skills.<br/>
 
