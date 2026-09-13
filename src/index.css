@@ -1,8 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap");
+:root {
+  --bg: #07080d;
+  --text: #f4f6fb;
+  --muted: #9aa3b5;
+  --accent: #8b7cff;
+}
+
 body {
   margin: 0;
-  font-family: "Raleway", serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-image: linear-gradient(to left, rgb(27 20 41), rgb(20 15 35));
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }

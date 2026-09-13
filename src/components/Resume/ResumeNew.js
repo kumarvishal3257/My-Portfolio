@@ -1,56 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { Container, Row } from "react-bootstrap";
-import Button from "react-bootstrap/Button";
-import Particle from "../Particle";
-import pdf from "../../Assets/../Assets/Vishal_Kumar_Resume.pdf";
-import { AiOutlineDownload } from "react-icons/ai";
-import { Document, Page, pdfjs } from "react-pdf";
-import "react-pdf/dist/esm/Page/AnnotationLayer.css";
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+import React from "react";
+import { Link } from "react-router-dom";
+import { site } from "../../data/content";
 
-function ResumeNew() {
-  const [width, setWidth] = useState(1200);
-
-  useEffect(() => {
-    setWidth(window.innerWidth);
-  }, []);
-
+function Resume() {
   return (
-    <div>
-      <Container fluid className="resume-section">
-        <Particle />
-        <Row style={{ justifyContent: "center", position: "relative" }}>
-          <Button
-            variant="primary"
-            href={pdf}
+    <main id="content" className="resume-page">
+      <div className="site-wrap resume-panel">
+        <p className="resume-kicker">Resume</p>
+        <h1>Vishal Kumar</h1>
+        <p>
+          {site.title}. Download the PDF or open the online copy.
+        </p>
+        <div className="hero-actions">
+          <a className="btn btn-solid" href={site.resumePdf} target="_blank" rel="noopener noreferrer">
+            Download resume
+          </a>
+          <a
+            className="btn btn-ghost"
+            href={site.resumeDrive}
             target="_blank"
-            style={{ maxWidth: "250px" }}
+            rel="noopener noreferrer"
           >
-            <AiOutlineDownload />
-            &nbsp;Download CV
-          </Button>
-        </Row>
-
-        <Row className="resume">
-          <Document file={pdf} className="d-flex justify-content-center">
-            <Page pageNumber={1} scale={width > 786 ? 1.7 : 0.6} />
-          </Document>
-        </Row>
-
-        <Row style={{ justifyContent: "center", position: "relative" }}>
-          <Button
-            variant="primary"
-            href={pdf}
-            target="_blank"
-            style={{ maxWidth: "250px" }}
-          >
-            <AiOutlineDownload />
-            &nbsp;Download CV
-          </Button>
-        </Row>
-      </Container>
-    </div>
+            View online
+          </a>
+          <Link className="btn btn-ghost" to="/#work">
+            Back to work
+          </Link>
+        </div>
+      </div>
+    </main>
   );
 }
 
-export default ResumeNew;
+export default Resume;

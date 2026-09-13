@@ -1,97 +1,123 @@
-import React, { useState } from "react";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
-import Container from "react-bootstrap/Container";
-import logo from "../Assets/logo.png";
-import { Link } from "react-router-dom";
-import {
-  AiOutlineHome,
-  AiOutlineFundProjectionScreen,
-  AiOutlineUser,
-} from "react-icons/ai";
-
-import { CgFileDocument } from "react-icons/cg";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { site, navItems } from "../data/content";
+import Avatar from "./Avatar/Avatar";
 
 function NavBar() {
-  const [expand, updateExpanded] = useState(false);
-  const [navColour, updateNavbar] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [active, setActive] = useState("home");
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  function scrollHandler() {
-    if (window.scrollY >= 20) {
-      updateNavbar(true);
-    } else {
-      updateNavbar(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname === "/resume") {
+      setActive("resume");
+      return undefined;
     }
-  }
 
-  window.addEventListener("scroll", scrollHandler);
+    const ids = navItems.map((item) => item.hash);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -50% 0px", threshold: 0 }
+    );
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname, location.hash]);
+
+  const goTo = (hash) => {
+    setOpen(false);
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior = prefersReduced ? "auto" : "smooth";
+    if (location.pathname !== "/") {
+      navigate(`/#${hash}`);
+      return;
+    }
+    const el = document.getElementById(hash);
+    if (el) {
+      el.scrollIntoView({ behavior });
+    }
+  };
 
   return (
-    <Navbar
-      expanded={expand}
-      fixed="top"
-      expand="md"
-      className={navColour ? "sticky" : "navbar"}
-    >
-      <Container>
-        <Navbar.Brand href="/" className="d-flex">
-          <img src={logo} className="img-fluid logo" alt="brand" />
-        </Navbar.Brand>
-        <Navbar.Toggle
-          aria-controls="responsive-navbar-nav"
-          onClick={() => {
-            updateExpanded(expand ? false : "expanded");
-          }}
+    <header className={`site-nav ${scrolled ? "is-scrolled" : ""} ${open ? "is-open" : ""}`}>
+      <div className="nav-float">
+        <div className="site-nav-inner">
+        <button
+          type="button"
+          className="brand"
+          onClick={() => goTo("home")}
+          aria-label="Vishal Kumar, go to home"
         >
-          <span></span>
-          <span></span>
-          <span></span>
-        </Navbar.Toggle>
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="ms-auto" defaultActiveKey="#home">
-            <Nav.Item>
-              <Nav.Link as={Link} to="/" onClick={() => updateExpanded(false)}>
-                <AiOutlineHome style={{ marginBottom: "2px" }} /> Home
-              </Nav.Link>
-            </Nav.Item>
+          <span className="brand-mark">
+            <Avatar size={28} className="avatar-xs" alt="" />
+          </span>
+          <span className="brand-name">{site.name}</span>
+        </button>
 
-            <Nav.Item>
-              <Nav.Link
-                as={Link}
-                to="/about"
-                onClick={() => updateExpanded(false)}
-              >
-                <AiOutlineUser style={{ marginBottom: "2px" }} /> About
-              </Nav.Link>
-            </Nav.Item>
+        <button
+          type="button"
+          className={`nav-toggle ${open ? "is-open" : ""}`}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          aria-controls="primary-navigation"
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span className="nav-toggle-bar" aria-hidden="true" />
+          <span className="nav-toggle-bar" aria-hidden="true" />
+        </button>
 
-            <Nav.Item>
-              <Nav.Link
-                as={Link}
-                to="/project"
-                onClick={() => updateExpanded(false)}
-              >
-                <AiOutlineFundProjectionScreen
-                  style={{ marginBottom: "2px" }}
-                />{" "}
-                Projects
-              </Nav.Link>
-            </Nav.Item>
-
-            <Nav.Item>
-              <Nav.Link
-                as={Link}
-                to="/resume"
-                onClick={() => updateExpanded(false)}
-              >
-                <CgFileDocument style={{ marginBottom: "2px" }} /> Resume
-              </Nav.Link>
-            </Nav.Item>
-            
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+        <nav
+          id="primary-navigation"
+          className={`nav-links ${open ? "is-open" : ""}`}
+          aria-label="Primary"
+        >
+          {navItems.map((item) => (
+            <button
+              key={item.hash}
+              type="button"
+              className={active === item.hash ? "is-active" : ""}
+              aria-current={active === item.hash ? "location" : undefined}
+              onClick={() => goTo(item.hash)}
+            >
+              {item.label}
+            </button>
+          ))}
+          <a
+            className="nav-resume"
+            href={site.resumePdf}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Download resume PDF"
+          >
+            Resume
+          </a>
+        </nav>
+        </div>
+      </div>
+    </header>
   );
 }
 

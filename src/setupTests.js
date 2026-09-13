@@ -3,3 +3,29 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+
+if (typeof window.IntersectionObserver === "undefined") {
+  window.IntersectionObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+window.scrollTo = () => {};
+
+HTMLCanvasElement.prototype.getContext = () => null;
+
+if (typeof window.matchMedia !== "function") {
+  window.matchMedia = (query) => ({
+    matches: false,
+    media: query,
+    addListener() {},
+    removeListener() {},
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  });
+}
