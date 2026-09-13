@@ -21,11 +21,7 @@ function ChatMessages({ messages, typing }) {
                             ? "_blank"
                             : undefined
                         }
-                        rel={
-                          /^(https?:)?\/\//.test(link.href) || /\.pdf(\?|$)/i.test(link.href)
-                            ? "noopener noreferrer"
-                            : undefined
-                        }
+                        rel="noreferrer"
                       >
                         {link.label}
                       </a>
