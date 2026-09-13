@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import ChatPanel from "./ChatPanel";
 import { getAssistantReply } from "../../data/getAssistantReply";
+import Avatar from "../Avatar/Avatar";
 
 function ChatWidget() {
   const reduce = useReducedMotion();
@@ -124,7 +125,9 @@ function ChatWidget() {
         whileHover={reduce ? undefined : { y: -2 }}
         whileTap={reduce ? undefined : { scale: 0.98 }}
       >
-        <span className="chat-launcher-mark">VK</span>
+        <span className="chat-launcher-mark">
+          <Avatar size={28} className="avatar-xs" alt="" />
+        </span>
         <span>Ask about Vishal</span>
       </motion.button>
     </div>

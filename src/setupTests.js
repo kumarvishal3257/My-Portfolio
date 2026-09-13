@@ -13,3 +13,19 @@ if (typeof window.IntersectionObserver === "undefined") {
 }
 
 window.scrollTo = () => {};
+
+HTMLCanvasElement.prototype.getContext = () => null;
+
+if (typeof window.matchMedia !== "function") {
+  window.matchMedia = (query) => ({
+    matches: false,
+    media: query,
+    addListener() {},
+    removeListener() {},
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  });
+}

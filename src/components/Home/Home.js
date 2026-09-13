@@ -5,6 +5,7 @@ import Work from "./Work";
 import Projects from "./Projects";
 import About from "./About";
 import Contact from "./Contact";
+import Skills from "./Skills";
 
 function Home({ initialSection }) {
   const location = useLocation();
@@ -30,6 +31,7 @@ function Home({ initialSection }) {
       <Work />
       <Projects />
       <About />
+      <Skills />
       <Contact />
     </main>
   );

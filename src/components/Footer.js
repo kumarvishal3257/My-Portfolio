@@ -28,7 +28,7 @@ function Footer() {
                 <a
                   href={social.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={social.name}
                 >
                   {Icon ? <Icon aria-hidden="true" /> : social.name}

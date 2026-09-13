@@ -29,6 +29,11 @@ function App() {
     <Router>
       <Preloader load={load} />
       <div className="App" id={load ? "no-scroll" : "scroll"}>
+        <div className="env" aria-hidden="true">
+          <div className="env-glow env-glow-a" />
+          <div className="env-glow env-glow-b" />
+          <div className="env-grid" />
+        </div>
         <a className="skip-link" href="#content">
           Skip to content
         </a>

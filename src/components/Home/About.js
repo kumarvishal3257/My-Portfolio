@@ -1,47 +1,45 @@
 import React from "react";
-import { education, interests, site, skills } from "../../data/content";
+import { education, interests, site } from "../../data/content";
 import FadeIn from "../FadeIn";
-import avatar from "../../Assets/avatar.svg";
+import Avatar from "../Avatar/Avatar";
+import portrait from "../../Assets/vishal-avatar.png";
 
 function About() {
   return (
-    <section className="section" id="about">
-      <div className="site-wrap about-grid">
-        <FadeIn>
-          <p className="eyebrow">03 — Profile</p>
+    <section className="section about-section" id="about">
+      <div className="about-wrap">
+        <FadeIn className="about-copy-col">
           <h2 className="section-title">About</h2>
-          <p className="about-copy">{site.summary}</p>
-          <p className="about-copy">
-            Based in {site.location}. {education.degree} from {education.school},{" "}
-            {education.place}, {education.dates}. {education.gpa}.
-          </p>
-          <p className="about-copy">
-            Outside of work: {interests.join(", ").replace(/, ([^,]*)$/, " and $1")}.
-          </p>
+          <p className="about-lead">{site.summary}</p>
+          <dl className="about-facts">
+            <div>
+              <dt>Location</dt>
+              <dd>{site.location}</dd>
+            </div>
+            <div>
+              <dt>Education</dt>
+              <dd>
+                {education.degree}
+                <br />
+                {education.school}, {education.place}
+                <br />
+                {education.dates} · {education.gpa}
+              </dd>
+            </div>
+            <div>
+              <dt>Interests</dt>
+              <dd>{interests.join(", ").replace(/, ([^,]*)$/, " and $1")}</dd>
+            </div>
+          </dl>
         </FadeIn>
 
-        <FadeIn delay={0.1} className="about-aside">
-          <img src={avatar} alt="" className="about-avatar" width="280" height="280" />
-          <div>
-            <h3 className="aside-title">Technical</h3>
-            <ul className="chip-row">
-              {skills.technical.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <h3 className="aside-title">Tools</h3>
-            <ul className="chip-row">
-              {skills.tools.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <h3 className="aside-title">Soft skills</h3>
-            <ul className="chip-row">
-              {skills.soft.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
+        <FadeIn delay={0.1} className="about-photo-col">
+          <Avatar
+            src={portrait}
+            size={260}
+            className="avatar-about"
+            alt="Portrait of Vishal Kumar"
+          />
         </FadeIn>
       </div>
     </section>

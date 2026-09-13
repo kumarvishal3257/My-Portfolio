@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { site, navItems } from "../data/content";
+import Avatar from "./Avatar/Avatar";
 
 function NavBar() {
   const [open, setOpen] = useState(false);
@@ -61,15 +62,18 @@ function NavBar() {
   };
 
   return (
-    <header className={`site-nav ${scrolled ? "is-scrolled" : ""}`}>
-      <div className="site-nav-inner">
+    <header className={`site-nav ${scrolled ? "is-scrolled" : ""} ${open ? "is-open" : ""}`}>
+      <div className="nav-float">
+        <div className="site-nav-inner">
         <button
           type="button"
           className="brand"
           onClick={() => goTo("home")}
           aria-label="Vishal Kumar, go to home"
         >
-          <span className="brand-mark">{site.shortName}</span>
+          <span className="brand-mark">
+            <Avatar size={28} className="avatar-xs" alt="" />
+          </span>
           <span className="brand-name">{site.name}</span>
         </button>
 
@@ -81,8 +85,8 @@ function NavBar() {
           aria-controls="primary-navigation"
           onClick={() => setOpen((value) => !value)}
         >
-          <span className="nav-toggle-bar" />
-          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" aria-hidden="true" />
+          <span className="nav-toggle-bar" aria-hidden="true" />
         </button>
 
         <nav
@@ -105,12 +109,13 @@ function NavBar() {
             className="nav-resume"
             href={site.resumePdf}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             aria-label="Download resume PDF"
           >
             Resume
           </a>
         </nav>
+        </div>
       </div>
     </header>
   );

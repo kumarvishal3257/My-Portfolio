@@ -1,6 +1,7 @@
 import React from "react";
 import ChatMessages from "./ChatMessages";
 import { SUGGESTED_QUESTIONS } from "../../data/portfolioKnowledge";
+import Avatar from "../Avatar/Avatar";
 
 function ChatPanel({
   messages,
@@ -18,10 +19,13 @@ function ChatPanel({
   return (
     <div className="chat-panel" role="dialog" aria-modal="true" aria-labelledby="chat-title" id="chat-dialog">
       <header className="chat-header">
-        <div>
-          <p className="chat-kicker">Portfolio assistant</p>
-          <h2 id="chat-title">Ask about Vishal</h2>
-          <p className="chat-sub">Explore my experience, skills & projects</p>
+        <div className="chat-header-identity">
+          <Avatar size={36} className="avatar-sm" alt="" />
+          <div>
+            <p className="chat-kicker">Portfolio assistant</p>
+            <h2 id="chat-title">Ask about Vishal</h2>
+            <p className="chat-sub">Explore my experience, skills & projects</p>
+          </div>
         </div>
         <button type="button" className="chat-close" onClick={onClose} aria-label="Close chat">
           Close

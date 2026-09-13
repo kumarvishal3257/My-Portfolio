@@ -16,19 +16,25 @@ function hasWord(text, word) {
   return new RegExp(`(?:^|\\s)${word}(?:\\s|$)`).test(text);
 }
 
+function flatSkills() {
+  return Object.values(knowledge.skills).flat();
+}
+
 const KNOWN_TECH = new Set(
   [
-    ...knowledge.skills.technical,
-    ...knowledge.skills.tools,
+    ...flatSkills(),
     ...knowledge.projects.flatMap((project) => project.stack),
-    "Redux",
+    "React",
+    "Next",
+    "Spring",
     "REST",
     "API",
-    "Axios",
-    "Fetch",
+    "Zustand",
     "HTML5",
     "ES6",
-  ].map((item) => normalize(item).replace(/\.js$/, ""))
+  ]
+    .map((item) => normalize(item).replace(/\.js$/, ""))
+    .filter(Boolean)
 );
 
 const UNKNOWN_TECH = [
@@ -36,44 +42,83 @@ const UNKNOWN_TECH = [
   "angular",
   "vue",
   "php",
-  "docker",
-  "aws",
   "kotlin",
   "swift",
   "golang",
   "ruby",
-  "next",
-  "nextjs",
-  "next.js",
+  "mongodb",
+  "express",
 ];
 
 function mentionsUnverifiedTech(query) {
-  if (hasWord(query, "java") && !query.includes("javascript")) return true;
-  return UNKNOWN_TECH.some((term) => query.includes(term));
+  return UNKNOWN_TECH.some((term) => hasWord(query, term) || query.includes(term));
+}
+
+function currentRole() {
+  return knowledge.experience.find((job) => job.current) || knowledge.experience[0];
+}
+
+function jobBlock(job) {
+  const status = job.current ? "Current role" : "Previous role";
+  return [
+    `${status}: ${job.role} at ${job.company}, ${job.location}, ${job.dates}.`,
+    job.bullets.map((item) => `• ${item}`).join("\n"),
+  ].join("\n");
 }
 
 function experienceAnswer() {
-  const [infosys, intern] = knowledge.experience;
   return {
     text: [
-      `The resume lists two roles.`,
-      `${infosys.role} at ${infosys.company} in ${infosys.location}, ${infosys.dates} (${infosys.duration}).`,
-      infosys.bullets.slice(0, 4).map((item) => `• ${item}`).join("\n"),
-      `${intern.role} at ${intern.company} (${intern.location}), ${intern.dates} (${intern.duration}).`,
-      intern.bullets.map((item) => `• ${item}`).join("\n"),
-      `I don't have verified information about a current employer.`,
+      `${knowledge.name} has ${knowledge.years} of experience.`,
+      ...knowledge.experience.map(jobBlock),
     ].join("\n\n"),
     links: [],
   };
 }
 
+function currentAnswer() {
+  const job = currentRole();
+  return {
+    text: [
+      `${knowledge.name} currently works as ${job.role} at ${job.company} in ${job.location} (${job.dates}).`,
+      knowledge.summary,
+    ].join("\n\n"),
+    links: [],
+  };
+}
+
+function companyAnswer(name) {
+  const job = knowledge.experience.find(
+    (item) => normalize(item.company).includes(normalize(name))
+  );
+  if (!job) return { text: UNKNOWN_REPLY, links: [] };
+  return { text: jobBlock(job), links: [] };
+}
+
 function skillsAnswer() {
   return {
     text: [
-      `Verified technical skills: ${knowledge.skills.technical.join(", ")}.`,
+      `Frontend: ${knowledge.skills.frontend.join(", ")}.`,
+      `Backend: ${knowledge.skills.backend.join(", ")}.`,
+      `Cloud & DevOps: ${knowledge.skills.cloud.join(", ")}.`,
+      `Performance: ${knowledge.skills.performance.join(", ")}.`,
+      `Testing: ${knowledge.skills.testing.join(", ")}.`,
       `Tools: ${knowledge.skills.tools.join(", ")}.`,
-      `Soft skills listed on the resume: ${knowledge.skills.soft.join(", ")}.`,
     ].join("\n\n"),
+    links: [],
+  };
+}
+
+function frontendAnswer() {
+  return {
+    text: `${knowledge.name} uses these frontend technologies: ${knowledge.skills.frontend.join(", ")}.`,
+    links: [],
+  };
+}
+
+function backendAnswer() {
+  return {
+    text: `${knowledge.name} has backend experience with ${knowledge.skills.backend.join(", ")}. At Infosys he maintained and debugged Java Spring Boot REST endpoints. At Tulip Technology Solutions he works across frontend, backend and API integration, including Java Spring Boot and Node.js.`,
     links: [],
   };
 }
@@ -84,16 +129,19 @@ function projectLines(project) {
     links.push({ label: `${project.title} GitHub`, href: project.ghLink });
   }
   if (project.demoLink) {
-    links.push({ label: `${project.title} demo`, href: project.demoLink });
+    links.push({ label: `${project.title} live demo`, href: project.demoLink });
   }
-
   const linkNote =
     project.ghLink || project.demoLink
       ? ""
       : " A repository URL is not listed in the resume or portfolio.";
-
+  const liveNote = project.demoLink ? " Live demo is available." : "";
+  const highlightNote =
+    project.highlights && project.highlights.length
+      ? ` Highlights: ${project.highlights.join("; ")}.`
+      : "";
   return {
-    text: `${project.title} (${project.source}): ${project.description} Stack: ${project.stack.join(", ")}.${linkNote}`,
+    text: `${project.title}: ${project.description} Stack: ${project.stack.join(", ")}.${highlightNote}${liveNote}${linkNote}`,
     links,
   };
 }
@@ -111,14 +159,13 @@ function contactAnswer() {
   const socialLines = knowledge.socials
     .map((social) => `${social.name}: ${social.href}`)
     .join("\n");
-
   return {
     text: [
       `You can contact ${knowledge.name} using these verified details:`,
       `Email: ${knowledge.email}`,
       `Phone: ${knowledge.phone}`,
       socialLines,
-      `Resume: available as a PDF download on this site.`,
+      `Resume: download the PDF on this site, or open the online copy.`,
     ].join("\n"),
     links: [
       { label: "Email", href: `mailto:${knowledge.email}` },
@@ -127,15 +174,17 @@ function contactAnswer() {
         label: social.name,
         href: social.href,
       })),
-      { label: "Resume", href: knowledge.resumePdf },
+      { label: "Resume PDF", href: knowledge.resumePdf },
+      { label: "Online resume", href: knowledge.resumeDrive },
     ],
   };
 }
 
 function aboutAnswer() {
+  const job = currentRole();
   return {
     text: [
-      `${knowledge.name} is a ${knowledge.role} based in ${knowledge.location}.`,
+      `${knowledge.name} is a ${knowledge.role} based in ${knowledge.location}, currently ${job.role} at ${job.company}.`,
       knowledge.summary,
       `Education: ${knowledge.education.degree} from ${knowledge.education.school}, ${knowledge.education.place}, ${knowledge.education.dates}. ${knowledge.education.gpa}.`,
       `Outside of work: ${knowledge.interests.join(", ").replace(/, ([^,]*)$/, " and $1")}.`,
@@ -153,16 +202,20 @@ function educationAnswer() {
 }
 
 function locationAnswer() {
+  const job = currentRole();
   return {
-    text: `${knowledge.name} is from ${knowledge.location}. The Infosys role was based in Bhubaneswar, Orissa. The TuteDude internship was remote.`,
+    text: `${knowledge.name} is from ${knowledge.location}. His current role at ${job.company} is in ${job.location}. The Infosys role was in Bhubaneshwar, Orissa.`,
     links: [],
   };
 }
 
 function resumeAnswer() {
   return {
-    text: `Vishal's resume is available as a PDF on this site.`,
-    links: [{ label: "Download resume", href: knowledge.resumePdf }],
+    text: `Vishal's resume is available as a PDF download on this site and as an online copy on Google Drive.`,
+    links: [
+      { label: "Download resume", href: knowledge.resumePdf },
+      { label: "Online resume", href: knowledge.resumeDrive },
+    ],
   };
 }
 
@@ -176,12 +229,6 @@ function findProject(query) {
     if (title.includes("currency") && includesAny(query, ["currency", "convertor", "converter"])) {
       return true;
     }
-    if (title.includes("insect") && includesAny(query, ["insect"])) {
-      return true;
-    }
-    if (title.includes("password") && hasWord(query, "password")) {
-      return true;
-    }
     return false;
   });
 }
@@ -189,7 +236,6 @@ function findProject(query) {
 const BLOCKED = [
   "salary",
   "ctc",
-  "package",
   "award",
   "awards",
   "client",
@@ -210,11 +256,48 @@ export function getAssistantReply(rawQuery) {
     return { text: UNKNOWN_REPLY, links: [] };
   }
 
-  if (includesAny(query, ["current job", "currently work", "current employer", "work now"])) {
+  if (
+    includesAny(query, [
+      "current job",
+      "currently work",
+      "current employer",
+      "current role",
+      "work now",
+      "where does vishal currently",
+      "tulip",
+    ])
+  ) {
+    return currentAnswer();
+  }
+
+  if (includesAny(query, ["how many years", "years of experience", "4 years", "4+"])) {
     return {
-      text: `The most recent role in the resume is Senior Systems Engineer at Infosys, March 2022 – Nov 2024. ${UNKNOWN_REPLY}`,
+      text: `The resume describes ${knowledge.name} as a Full-Stack Developer with ${knowledge.years} of experience building scalable, high-performance web applications using React, Next.js, Node.js, and Java Spring Boot.`,
       links: [],
     };
+  }
+
+  if (includesAny(query, ["infosys"])) {
+    return companyAnswer("Infosys");
+  }
+
+  if (hasWord(query, "java") || includesAny(query, ["spring boot", "spring"])) {
+    return backendAnswer();
+  }
+
+  if (hasWord(query, "aws") || includesAny(query, ["ecs", "s3", "ec2"])) {
+    return {
+      text: `${knowledge.name} uses AWS. Verified cloud and DevOps skills include ${knowledge.skills.cloud.join(", ")}. At Tulip Technology Solutions he deployed backend services on AWS ECS and integrated Amazon S3 for file and attachment storage.`,
+      links: [],
+    };
+  }
+
+  if (includesAny(query, ["backend"])) {
+    return backendAnswer();
+  }
+
+  if (includesAny(query, ["frontend"])) {
+    return frontendAnswer();
   }
 
   const project = findProject(query);
@@ -239,7 +322,7 @@ export function getAssistantReply(rawQuery) {
 
   if (
     includesAny(query, ["godda", "from", "live", "location"]) &&
-    !includesAny(query, ["work", "job", "company", "infosys"])
+    !includesAny(query, ["work", "job", "company", "infosys", "tulip"])
   ) {
     return locationAnswer();
   }
@@ -255,7 +338,7 @@ export function getAssistantReply(rawQuery) {
     return projectsAnswer();
   }
 
-  if (includesAny(query, ["experience", "infosys", "tutedude", "intern", "work history", "worked", "engineer", "job", "role"])) {
+  if (includesAny(query, ["experience", "work history", "worked", "job", "role"])) {
     return experienceAnswer();
   }
 
@@ -267,7 +350,7 @@ export function getAssistantReply(rawQuery) {
   }
 
   if (
-    includesAny(query, ["who", "about", "introduce", "summary", "hello"]) ||
+    includesAny(query, ["who", "about", "introduce", "summary", "hello", "what does vishal do", "what do you do"]) ||
     hasWord(query, "hi") ||
     hasWord(query, "hey") ||
     hasWord(query, "vishal")

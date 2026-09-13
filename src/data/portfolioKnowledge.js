@@ -11,9 +11,9 @@ export const UNKNOWN_REPLY =
   "I don't have verified information about that. You can contact Vishal directly through email or LinkedIn.";
 
 export const SUGGESTED_QUESTIONS = [
-  "Tell me about Vishal's experience",
-  "What are his technical skills?",
-  "What projects has he built?",
+  "Where does Vishal currently work?",
+  "Tell me about his experience",
+  "What frontend technologies does he use?",
   "How can I contact him?",
 ];
 
@@ -22,11 +22,13 @@ export const knowledge = {
   role: site.title,
   roles: site.roles,
   summary: site.summary,
+  years: "around 4 years",
   location: site.location,
   email: site.email,
   phone: site.phone,
   phoneHref: site.phoneHref,
   resumePdf: site.resumePdf,
+  resumeDrive: site.resumeDrive,
   socials: site.socials,
   experience,
   skills,
@@ -34,9 +36,9 @@ export const knowledge = {
   interests,
   projects: projects.map((project) => ({
     title: project.title,
-    source: project.source,
-    subtitle: project.subtitle,
+    live: Boolean(project.live && project.demoLink),
     description: project.description,
+    highlights: project.highlights || [],
     stack: project.stack,
     ghLink: project.ghLink,
     demoLink: project.demoLink,

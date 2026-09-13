@@ -1,6 +1,6 @@
 {
   "short_name": "Vishal Kumar",
-  "name": "Vishal Kumar | Frontend Developer",
+  "name": "Vishal Kumar | Full-Stack Developer",
   "icons": [
     {
       "src": "favicon.png",
@@ -10,6 +10,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#08070b",
-  "background_color": "#08070b"
+  "theme_color": "#07080d",
+  "background_color": "#07080d"
 }
