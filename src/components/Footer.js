@@ -1,59 +1,44 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import {
-  AiFillGithub,
-  AiFillInstagram,
-} from "react-icons/ai";
+import { site } from "../data/content";
+import { AiFillGithub, AiFillInstagram } from "react-icons/ai";
 import { FaLinkedinIn } from "react-icons/fa";
 
+const icons = {
+  GitHub: AiFillGithub,
+  LinkedIn: FaLinkedinIn,
+  Instagram: AiFillInstagram,
+};
+
 function Footer() {
-  let date = new Date();
-  let year = date.getFullYear();
+  const year = new Date().getFullYear();
+
   return (
-    <Container fluid className="footer">
-      <Row>
-        <Col md="4" className="footer-copywright">
-          <h3>Designed and Developed by Vishal Kumar</h3>
-        </Col>
-        <Col md="4" className="footer-copywright">
-          <h3>Copyright © {year} VK</h3>
-        </Col>
-        <Col md="4" className="footer-body">
-          <ul className="footer-icons">
-            <li className="social-icons">
-              <a
-                href="https://github.com/kumarvishal3257"
-                style={{ color: "white" }}
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <AiFillGithub />
-              </a>
-            </li>
-            <li className="social-icons">
-              <a
-                href="https://www.linkedin.com/in/vishal-kumar-234a05190/"
-                style={{ color: "white" }}
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <FaLinkedinIn />
-              </a>
-            </li>
-            <li className="social-icons">
-              <a
-                href="https://www.instagram.com/just__vishal.__/"
-                style={{ color: "white" }}
-                target="_blank" 
-                rel="noopener noreferrer"
-              >
-                <AiFillInstagram />
-              </a>
-            </li>
-          </ul>
-        </Col>
-      </Row>
-    </Container>
+    <footer className="site-footer">
+      <div className="site-wrap footer-grid">
+        <p>
+          {site.name}
+          <span> {site.title}</span>
+        </p>
+        <p>© {year}</p>
+        <ul className="footer-social">
+          {site.socials.map((social) => {
+            const Icon = icons[social.name];
+            return (
+              <li key={social.name}>
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={social.name}
+                >
+                  {Icon ? <Icon aria-hidden="true" /> : social.name}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </footer>
   );
 }
 

@@ -1,48 +1,37 @@
-import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import homeLogo from "../../Assets/home-main.svg";
-import Particle from "../Particle";
-import Home2 from "./Home2";
-import Type from "./Type";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Hero from "./Hero";
+import Work from "./Work";
+import Projects from "./Projects";
+import About from "./About";
+import Contact from "./Contact";
 
-function Home() {
+function Home({ initialSection }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const fromHash = location.hash ? location.hash.replace("#", "") : "";
+    const target = fromHash || initialSection;
+    if (!target) return undefined;
+
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById(target);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 80);
+
+    return () => window.clearTimeout(timer);
+  }, [location.hash, initialSection]);
+
   return (
-    <section>
-      <Container fluid className="home-section" id="home">
-        <Particle />
-        <Container className="home-content">
-          <Row>
-            <Col md={7} className="home-header">
-              <h1 style={{ paddingBottom: 15 }} className="heading">
-                Hi There!{" "}
-                <span className="wave" role="img" aria-labelledby="wave">
-                  👋🏻
-                </span>
-              </h1>
-
-              <h1 className="heading-name">
-                I'M
-                <strong className="main-name"> VISHAL KUMAR</strong>
-              </h1>
-
-              <div style={{ padding: 50, textAlign: "left" }}>
-                <Type />
-              </div>
-            </Col>
-
-            <Col md={5} style={{ paddingBottom: 20 }}>
-              <img
-                src={homeLogo}
-                alt="home pic"
-                className="img-fluid"
-                style={{ maxHeight: "450px" }}
-              />
-            </Col>
-          </Row>
-        </Container>
-      </Container>
-      <Home2 />
-    </section>
+    <main id="content">
+      <Hero />
+      <Work />
+      <Projects />
+      <About />
+      <Contact />
+    </main>
   );
 }
 
